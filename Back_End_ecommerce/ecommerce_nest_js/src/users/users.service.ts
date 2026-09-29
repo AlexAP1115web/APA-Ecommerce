@@ -1,36 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private usersRepo: Repository<User>) {}
 
-  create(dto: CreateUserDto) {
-    return this.usersRepo.save(this.usersRepo.create(dto));
-  }
+    constructor(
+        @InjectRepository(User) private usersRepository: Repository<User>,
+    ) {}
+    //Estamos usando conceptos de APIRest
+    create(user: CreateUserDto) {
+        const newUser = this.usersRepository.create(user);//Aqui nos crea un nuevo usuario
+        return this.usersRepository.save(newUser);//Se lo enviamos a la BD
+    }
 
-  findAll() {
-    return this.usersRepo.find();
-  }
+    findAll() {
+        return this.usersRepository.find({ relations: { roles: true } });
+    }
 
-  async findOne(id: number) {
-    const user = await this.usersRepo.findOneBy({ id });
-    if (!user) throw new NotFoundException('Usuario no encontrado');
-    return user;
-  }
+    async update(id: number, user: UpdateUserDto) {
+        const userFound = await this.usersRepository.findOneBy({id: id}); 
 
-  async update(id: number, dto: UpdateUserDto) {
-    await this.findOne(id);
-    await this.usersRepo.update(id, dto);
-    return this.findOne(id);
-  }
+        if (!userFound) {
+            throw new HttpException('Usuario no existe', HttpStatus.NOT_FOUND);
+        }
 
-  async remove(id: number) {
-    const user = await this.findOne(id);
-    return this.usersRepo.remove(user);
-  }
+        const updatedUser = Object.assign(userFound, user);//Actualiza al usuario
+        return this.usersRepository.save(updatedUser);
+    }
+
 }
