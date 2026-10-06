@@ -10,7 +10,7 @@ export class Rol {
     @Column({ unique: true })
     name: string
     
-    @Column()
+       @Column({ nullable: true })
     image: string
 
     @Column()

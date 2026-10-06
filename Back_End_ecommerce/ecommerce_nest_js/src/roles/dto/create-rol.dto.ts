@@ -10,9 +10,7 @@ export class CreateRolDto {
     @IsString()
     name: string;
     
-    @IsNotEmpty()
-    @IsString()
-    image: string;
+    image?: string;
     
     @IsNotEmpty()
     @IsString()
