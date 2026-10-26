@@ -17,7 +17,8 @@ export class UsersController {
     // PUT ' PATCH -> ACTUALIZAR
     // DELETE ' => BORRAR
 
-    @Get() // http://localhost:3000/users -> GET (obtiene todos los usuarios)
+    @UseGuards(JwtAuthGuard, JwtRolesGuard)
+    @Get() // http://localhost:3000/users -> GET
     findAll() {
         return this.usersService.findAll();
     }

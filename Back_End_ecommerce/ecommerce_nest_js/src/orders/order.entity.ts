@@ -1,0 +1,38 @@
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { User } from '../users/user.entity';
+import { Address } from '../address/address.entity';
+import { OrderHasProducts } from './order_has_products.entity';
+
+@Entity('orders')
+export class Order {
+
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column()
+    id_client: number;
+    
+    @Column()
+    id_address: number;
+
+    @Column({default: 'PAGADO'})
+    status: string;
+
+    @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+    created_at: Date;
+    
+    @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+    updated_at: Date;
+
+    @ManyToOne(() => User, (user) => user.id)
+    @JoinColumn({ name: 'id_client' })
+    user: User;
+    
+    @ManyToOne(() => Address, (address) => address.id)
+    @JoinColumn({ name: 'id_address' })
+    address: Address;
+
+    @OneToMany(() => OrderHasProducts, (ohp) => ohp.order)
+    orderHasProducts: OrderHasProducts[]
+
+}

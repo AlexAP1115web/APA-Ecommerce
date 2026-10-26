@@ -5,6 +5,11 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
+import { CategoriesModule } from './categories/categories.module';
+import { ProductsModule } from './products/products.module';
+import { AddressModule } from './address/address.module';
+import { OrdersModule } from './orders/orders.module';
+import { MercadoPagoModule } from './mercado_pago/mercado_pago.module';
 
 @Module({
   imports: [
@@ -21,6 +26,11 @@ import { RolesModule } from './roles/roles.module';
     UsersModule,
     AuthModule,
     RolesModule,
+    CategoriesModule,
+    ProductsModule,
+    AddressModule,
+    MercadoPagoModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

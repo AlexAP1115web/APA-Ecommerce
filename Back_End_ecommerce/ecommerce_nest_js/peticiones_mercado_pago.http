@@ -1,0 +1,67 @@
+@base = http://localhost:3000
+
+### 1. Login para obtener el token de la API
+# @name login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "alex2@test.com",
+  "password": "123456"
+}
+
+### 2. Tipos de identificación
+GET {{base}}/mercadopago/identification_types
+Authorization: {{login.response.body.token}}
+
+### 3. Cuotas de la tarjeta (primeros 6 dígitos y monto)
+# @name cuotas
+GET {{base}}/mercadopago/installments/547492/1000
+Authorization: {{login.response.body.token}}
+
+### 4. Token de la tarjeta
+# @name tarjeta
+POST {{base}}/mercadopago/card_token
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "card_number": "5474925432670366",
+  "expiration_year": "2030",
+  "expiration_month": 11,
+  "security_code": "123",
+  "cardholder": {
+    "name": "APRO",
+    "identification": {
+      "type": "RFC",
+      "number": "XAXX010101000"
+    }
+  }
+}
+
+### 5. Pago con la orden
+POST {{base}}/mercadopago/payments
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "transaction_amount": 1000,
+  "token": "{{tarjeta.response.body.id}}",
+  "installments": 1,
+  "issuer_id": "{{cuotas.response.body.issuer.id}}",
+  "payment_method_id": "{{cuotas.response.body.payment_method_id}}",
+  "payer": {
+    "email": "alex.compras.prueba@gmail.com",
+    "identification": {
+      "type": "RFC",
+      "number": "XAXX010101000"
+    }
+  },
+  "order": {
+    "id_client": 2,
+    "id_address": 1,
+    "products": [
+      { "id": 1, "quantity": 1 }
+    ]
+  }
+}
